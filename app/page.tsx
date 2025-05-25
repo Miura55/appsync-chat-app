@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { FaUser, FaPaperPlane } from "react-icons/fa";
 import InputUserName from "@/app/components/input-user-name";
 import { publishEvent } from "@/app/utils/rest";
+import { SubscribeEvent } from "@/app/utils/websocket";
 
 interface Message {
   id: number;
@@ -18,6 +19,7 @@ const ChatApp: React.FC = () => {
   const [newMessage, setNewMessage] = useState("");
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const websocketRef = useRef<SubscribeEvent | null>(null);
 
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -52,6 +54,41 @@ const ChatApp: React.FC = () => {
     },
   ]);
 
+  // WebSocketの初期化
+  useEffect(() => {
+    const subscriber = new SubscribeEvent();
+    websocketRef.current = subscriber;
+    subscriber.onMessage((data: any) => {
+      console.log("受信したデータ:", data);
+      switch (data.type) {
+        case "connection_ack":
+          console.log("WebSocket接続が確立されました");
+          break;
+        case "data":
+          const eventData = JSON.parse(data.event);
+          const newMessage: Message = {
+            id: data.id,
+            message: eventData.message,
+            sender: eventData.sender,
+            timestamp: new Date(eventData.timestamp),
+          };
+          setMessages((prevMessages) => [...prevMessages, newMessage]);
+          break;
+        default:
+          break;
+      }
+      /* eslint @typescript-eslint/no-explicit-any: 0 */
+    });
+
+    // クリーンアップ関数：コンポーネントがアンマウントされたときに実行
+    return () => {
+      if (websocketRef.current) {
+        websocketRef.current.removeEventListener();
+        websocketRef.current.close();
+      }
+    };
+  }, []);
+
   // メッセージが更新されたら自動的に最下部にスクロール
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -66,14 +103,6 @@ const ChatApp: React.FC = () => {
 
   const handleSendMessage = async () => {
     if (newMessage.trim()) {
-      // メッセージオブジェクトを作成
-      const message: Message = {
-        id: messages.length + 1,
-        message: newMessage,
-        sender: userName,
-        timestamp: new Date(),
-      };
-
       try {
         // メッセージを送信
         await publishEvent({
@@ -84,9 +113,6 @@ const ChatApp: React.FC = () => {
       } catch (error) {
         console.error("メッセージの送信中にエラーが発生しました:", error);
       }
-
-      // UIを更新（バックエンドの状態に関係なくローカルUI更新）
-      setMessages([...messages, message]);
       setNewMessage("");
     }
   };
@@ -131,10 +157,9 @@ const ChatApp: React.FC = () => {
       </div>
 
       {/* Messages Container */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((message) => (
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">        {messages.map((message) => (
           <div
-            key={message.id}
+            key={`${message.id}-${message.timestamp.getTime()}-${message.sender}`}
             className={`flex items-start space-x-3 ${
               message.sender === userName
                 ? "flex-row-reverse space-x-reverse"
