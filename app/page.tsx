@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { FaUser, FaPaperPlane } from "react-icons/fa";
 import InputUserName from "@/app/components/input-user-name";
 
@@ -14,6 +14,7 @@ const ChatApp: React.FC = () => {
   const [userName, setUserName] = useState<string>("");
   const [showNameDialog, setShowNameDialog] = useState<boolean>(true);
   const [tempUserName, setTempUserName] = useState<string>("");
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -49,6 +50,11 @@ const ChatApp: React.FC = () => {
   ]);
 
   const [newMessage, setNewMessage] = useState("");
+
+  // メッセージが更新されたら自動的に最下部にスクロール
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   const formatTime = (date: Date): string => {
     return date.toLocaleTimeString("ja-JP", {
@@ -177,6 +183,8 @@ const ChatApp: React.FC = () => {
             </div>
           </div>
         ))}
+        {/* 自動スクロール用の参照要素 */}
+        <div ref={messagesEndRef} />
       </div>
 
       {/* Input Area */}
