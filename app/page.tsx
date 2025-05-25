@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FaUser, FaPaperPlane } from "react-icons/fa";
 import InputUserName from "@/app/components/input-user-name";
+import { publishEvent } from "@/app/utils/rest";
 
 interface Message {
   id: number;
@@ -14,6 +15,8 @@ const ChatApp: React.FC = () => {
   const [userName, setUserName] = useState<string>("");
   const [showNameDialog, setShowNameDialog] = useState<boolean>(true);
   const [tempUserName, setTempUserName] = useState<string>("");
+  const [newMessage, setNewMessage] = useState("");
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const [messages, setMessages] = useState<Message[]>([
@@ -49,8 +52,6 @@ const ChatApp: React.FC = () => {
     },
   ]);
 
-  const [newMessage, setNewMessage] = useState("");
-
   // メッセージが更新されたら自動的に最下部にスクロール
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -63,23 +64,37 @@ const ChatApp: React.FC = () => {
     });
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (newMessage.trim()) {
+      // メッセージオブジェクトを作成
       const message: Message = {
         id: messages.length + 1,
         message: newMessage,
         sender: userName,
         timestamp: new Date(),
       };
+
+      try {
+        // メッセージを送信
+        await publishEvent({
+          sender: userName,
+          message: newMessage,
+        });
+        console.log("メッセージが正常に送信されました");
+      } catch (error) {
+        console.error("メッセージの送信中にエラーが発生しました:", error);
+      }
+
+      // UIを更新（バックエンドの状態に関係なくローカルUI更新）
       setMessages([...messages, message]);
       setNewMessage("");
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyPress = async (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      handleSendMessage();
+      await handleSendMessage();
     }
   };
 
