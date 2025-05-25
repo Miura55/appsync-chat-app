@@ -5,7 +5,7 @@ import InputUserName from "@/app/components/input-user-name";
 
 interface Message {
   id: number;
-  text: string;
+  message: string;
   sender: string;
   timestamp: Date;
 }
@@ -19,31 +19,31 @@ const ChatApp: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
-      text: "こんにちは！今日はどうですか？",
+      message: "こんにちは！今日はどうですか？",
       sender: "田中さん",
       timestamp: new Date(2024, 0, 15, 9, 30),
     },
     {
       id: 2,
-      text: "おはようございます！とても調子がいいです。お疲れ様です。",
+      message: "おはようございます！とても調子がいいです。お疲れ様です。",
       sender: "佐藤さん",
       timestamp: new Date(2024, 0, 15, 9, 32),
     },
     {
       id: 3,
-      text: "それは良かったです。今日は天気も良いですね。",
+      message: "それは良かったです。今日は天気も良いですね。",
       sender: "佐藤さん",
       timestamp: new Date(2024, 0, 15, 9, 35),
     },
     {
       id: 4,
-      text: "本当にそうですね！散歩日和です。",
+      message: "本当にそうですね！散歩日和です。",
       sender: "佐藤さん",
       timestamp: new Date(2024, 0, 15, 9, 36),
     },
     {
       id: 5,
-      text: "週末の予定はありますか？",
+      message: "週末の予定はありますか？",
       sender: "鈴木さん",
       timestamp: new Date(2024, 0, 15, 9, 40),
     },
@@ -67,7 +67,7 @@ const ChatApp: React.FC = () => {
     if (newMessage.trim()) {
       const message: Message = {
         id: messages.length + 1,
-        text: newMessage,
+        message: newMessage,
         sender: userName,
         timestamp: new Date(),
       };
@@ -160,7 +160,7 @@ const ChatApp: React.FC = () => {
                     : "bg-gray-100 text-gray-800 rounded-bl-sm"
                 }`}
               >
-                <p className="text-sm leading-relaxed">{message.text}</p>
+                <p className="text-sm leading-relaxed">{message.message}</p>
 
                 {/* Speech Bubble Tail */}
                 <div
