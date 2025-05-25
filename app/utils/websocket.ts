@@ -27,7 +27,7 @@ export class SubscribeEvent {
     
     this.ws.send(JSON.stringify({
       "type": "subscribe",
-      "id": this.generateUuid(),
+      "id": uuidv4(),
       "channel": "/default/channel",
       "authorization": {
         "host": process.env.NEXT_PUBLIC_APPSYNC_ENDPOINT_HTTP as string,
@@ -55,14 +55,6 @@ export class SubscribeEvent {
   removeEventListener() {
     this.ws.removeEventListener("message", () => {});
     this.ws.removeEventListener("error", () => {});
-  }
-  
-  /**
-   * ランダムなUUIDを生成します
-   * @returns 生成されたUUID文字列
-   */
-  generateUuid(): string {
-    return uuidv4();
   }
   /* eslint @typescript-eslint/no-explicit-any: 0 */
 }
