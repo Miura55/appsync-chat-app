@@ -6,9 +6,9 @@ interface Event {
 }
 
 const appsyncPublish = axios.create({
-  baseURL: `https://${process.env.NEXT_PUBLIC_APPSYNC_ENDPOINT_HTTP}/event`,
+  baseURL: `https://${process.env.NEXT_PUBLIC_APPSYNC_ENDPOINT_HTTP as string}/event`,
   headers: {
-    "x-api-key": process.env.NEXT_PUBLIC_APPSYNC_API_KEY || "",
+    "x-api-key": process.env.NEXT_PUBLIC_APPSYNC_API_KEY as string,
   }
 });
 
