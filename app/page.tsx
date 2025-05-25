@@ -19,7 +19,7 @@ const ChatApp: React.FC = () => {
   const [newMessage, setNewMessage] = useState("");
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const websocketRef = useRef<SubscribeEvent | null>(null);
+  const websocketRef = useRef<SubscribeEvent>(null);
 
   const [messages, setMessages] = useState<Message[]>([
     {
