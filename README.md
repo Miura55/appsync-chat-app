@@ -1,17 +1,33 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AppSync Events Chat App
+
+このプロジェクトは、AWS AppSync Eventsを使用したリアルタイムチャットアプリケーションのサンプルです。
 
 ## Getting Started
 
-First, run the development server:
+### .envファイル
+
+アプリケーションのルートディレクトリに`.env`ファイルを作成し、以下の環境変数を設定してください。
+
+```plaintext
+NEXT_PUBLIC_APPSYNC_ENDPOINT_HTTP=<AppSyncで取得したHTTPのDNSエンドポインt>
+NEXT_PUBLIC_APPSYNC_ENDPOINT_REALTIME=<AppSyncで取得したリアルタイムのDNSエンドポイント>
+NEXT_PUBLIC_APPSYNC_API_KEY=<AppSyncで取得したAPIキー>
+```
+
+### インストール
+
+以下のコマンドを実行して、必要な依存関係をインストールします。
+
+```bash
+npm install
+```
+
+### 開発サーバーの起動
+
+次のコマンドを実行して、開発サーバーを起動します。
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
