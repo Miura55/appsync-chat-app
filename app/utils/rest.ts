@@ -54,14 +54,8 @@ export const publishEvent = async (event: Event) => {
 // Chat Data API functions
 export const fetchMessages = async (): Promise<ChatMessage[]> => {
   try {
-    const response = await chatDataApi.get("/");
-    const responseBody= JSON.parse(response.data.body)
-    const messages: ChatMessage[] = responseBody.messages.map((msg: any) => ({
-      id: msg.id,
-      sender: msg.sender,
-      message: msg.message,
-      timestamp: msg.timestamp,
-    }));
+    const response = await chatDataApi.get("/messages");
+    const messages: ChatMessage[] = response.data.messages;
     return messages;
   } catch (error) {
     console.error("Error fetching messages:", error);
@@ -70,5 +64,4 @@ export const fetchMessages = async (): Promise<ChatMessage[]> => {
     }
     throw error;
   }
-  /* eslint @typescript-eslint/no-explicit-any: 0 */
 };
