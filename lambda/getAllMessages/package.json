@@ -1,0 +1,14 @@
+{
+  "name": "get-all-messages",
+  "version": "1.0.0",
+  "description": "Lambda function to fetch all messages from appsync_events_chat DynamoDB table",
+  "main": "index.js",
+  "dependencies": {
+    "aws-sdk": "^2.1502.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
