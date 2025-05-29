@@ -5,6 +5,14 @@ interface Event {
   message: string;
 }
 
+interface ChatMessage {
+  id: string;
+  sender: string;
+  message: string;
+  timestamp: string;
+}
+
+// AppSync API client
 const appsyncPublish = axios.create({
   baseURL: `https://${process.env.NEXT_PUBLIC_APPSYNC_ENDPOINT_HTTP as string}/event`,
   headers: {
@@ -12,6 +20,15 @@ const appsyncPublish = axios.create({
   }
 });
 
+// Chat Data API client
+const chatDataApi = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_CHAT_DATA_API_URL as string,
+  headers: {
+    "Content-Type": "application/json",
+  }
+});
+
+// AppSync publish event function
 export const publishEvent = async (event: Event) => {
   try {
     const response = await appsyncPublish.post("", {
@@ -32,4 +49,26 @@ export const publishEvent = async (event: Event) => {
     }
     throw error;
   }
-}
+};
+
+// Chat Data API functions
+export const fetchMessages = async (): Promise<ChatMessage[]> => {
+  try {
+    const response = await chatDataApi.get("/");
+    const responseBody= JSON.parse(response.data.body)
+    const messages: ChatMessage[] = responseBody.messages.map((msg: any) => ({
+      id: msg.id,
+      sender: msg.sender,
+      message: msg.message,
+      timestamp: msg.timestamp,
+    }));
+    return messages;
+  } catch (error) {
+    console.error("Error fetching messages:", error);
+    if (axios.isAxiosError(error) && !error.response) {
+      console.error("Network error: Cannot connect to Chat Data API.");
+    }
+    throw error;
+  }
+  /* eslint @typescript-eslint/no-explicit-any: 0 */
+};

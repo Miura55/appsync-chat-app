@@ -2,11 +2,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FaUser, FaPaperPlane } from "react-icons/fa";
 import InputUserName from "@/app/components/input-user-name";
-import { publishEvent } from "@/app/utils/rest";
+import { publishEvent, fetchMessages } from "@/app/utils/rest";
 import { SubscribeEvent } from "@/app/utils/websocket";
 
 interface Message {
-  id: number;
+  id: string;
   message: string;
   sender: string;
   timestamp: Date;
@@ -21,38 +21,30 @@ const ChatApp: React.FC = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const websocketRef = useRef<SubscribeEvent>(null);
 
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 1,
-      message: "こんにちは！今日はどうですか？",
-      sender: "田中さん",
-      timestamp: new Date(2024, 0, 15, 9, 30),
-    },
-    {
-      id: 2,
-      message: "おはようございます！とても調子がいいです。お疲れ様です。",
-      sender: "佐藤さん",
-      timestamp: new Date(2024, 0, 15, 9, 32),
-    },
-    {
-      id: 3,
-      message: "それは良かったです。今日は天気も良いですね。",
-      sender: "佐藤さん",
-      timestamp: new Date(2024, 0, 15, 9, 35),
-    },
-    {
-      id: 4,
-      message: "本当にそうですね！散歩日和です。",
-      sender: "佐藤さん",
-      timestamp: new Date(2024, 0, 15, 9, 36),
-    },
-    {
-      id: 5,
-      message: "週末の予定はありますか？",
-      sender: "鈴木さん",
-      timestamp: new Date(2024, 0, 15, 9, 40),
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
+
+  // 初期メッセージのフェッチ
+  useEffect(() => {
+    const fetchInitialMessages = async () => {
+      try {
+        const initialMessages = await fetchMessages();
+        initialMessages.sort((a, b) => {
+          return new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime();
+        });
+        const formattedMessages = initialMessages.map((msg) => ({
+          id: msg.id,
+          message: msg.message,
+          sender: msg.sender,
+          timestamp: new Date(msg.timestamp),
+        }));
+        setMessages(formattedMessages);
+      } catch (error) {
+        console.error("メッセージの取得中にエラーが発生しました:", error);
+      }
+    };
+
+    fetchInitialMessages();
+  }, []);
 
   // WebSocketの初期化
   useEffect(() => {
